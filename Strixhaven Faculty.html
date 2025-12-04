@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strixhaven Faculty & Staff Directory</title>
+    <style>
+        :root {
+            --bg-color: #f4f1ea;
+            --text-color: #2c2c2c;
+            --header-bg: #1a1a2e;
+            --header-text: #e0e0e0;
+            
+            /* College Colors */
+            --lorehold-primary: #8a3324; /* Red/Rust */
+            --lorehold-accent: #e6b89c;
+            
+            --prismari-primary: #2d5a8e; /* Blue */
+            --prismari-secondary: #c93434; /* Red accent */
+            
+            --quandrix-primary: #2b7a5a; /* Green/Teal */
+            --quandrix-accent: #a3d9c9;
+            
+            --silverquill-primary: #111111; /* Black */
+            --silverquill-accent: #f0f0f0; /* White/Grey */
+            
+            --witherbloom-primary: #2e4a28; /* Dark Green */
+            --witherbloom-accent: #8fbf75; /* Light Green */
+            
+            --admin-primary: #4a4a4a;
+            --admin-accent: #d4af37; /* Gold */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 5px solid var(--admin-accent);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            margin: 0.5rem 0 0;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        nav {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav li {
+            margin: 0;
+        }
+
+        nav a {
+            display: block;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        nav a:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Nav Color Coding */
+        nav a[href="#admin"]:hover { border-bottom-color: var(--admin-accent); }
+        nav a[href="#lorehold"]:hover { border-bottom-color: var(--lorehold-primary); color: var(--lorehold-primary); }
+        nav a[href="#prismari"]:hover { border-bottom-color: var(--prismari-primary); color: var(--prismari-primary); }
+        nav a[href="#quandrix"]:hover { border-bottom-color: var(--quandrix-primary); color: var(--quandrix-primary); }
+        nav a[href="#silverquill"]:hover { border-bottom-color: var(--silverquill-primary); color: var(--silverquill-primary); }
+        nav a[href="#witherbloom"]:hover { border-bottom-color: var(--witherbloom-primary); color: var(--witherbloom-primary); }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px; /* Offset for sticky nav */
+        }
+
+        .section-header {
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .college-subtitle {
+            font-size: 1.1rem;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        /* Grid for Staff Cards */
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .staff-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .staff-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .staff-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .staff-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .staff-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            opacity: 0.6;
+        }
+
+        .staff-bio {
+            font-size: 0.95rem;
+        }
+
+        /* College Specific Styling */
+        
+        /* Admin */
+        #admin .section-header h2 { color: var(--admin-primary); }
+        #admin .staff-card::before { background-color: var(--admin-accent); }
+        #admin .staff-title { color: var(--admin-primary); }
+
+        /* Lorehold */
+        #lorehold .section-header h2 { color: var(--lorehold-primary); }
+        #lorehold .section-header { border-bottom-color: var(--lorehold-primary); }
+        #lorehold .staff-card::before { background-color: var(--lorehold-primary); }
+        #lorehold .staff-title { color: var(--lorehold-primary); }
+
+        /* Prismari */
+        #prismari .section-header h2 { color: var(--prismari-primary); }
+        #prismari .section-header { border-bottom-color: linear-gradient(to right, var(--prismari-primary), var(--prismari-secondary)); }
+        #prismari .staff-card::before { background: linear-gradient(to bottom, var(--prismari-primary), var(--prismari-secondary)); }
+        #prismari .staff-title { color: var(--prismari-primary); }
+
+        /* Quandrix */
+        #quandrix .section-header h2 { color: var(--quandrix-primary); }
+        #quandrix .section-header { border-bottom-color: var(--quandrix-primary); }
+        #quandrix .staff-card::before { background-color: var(--quandrix-primary); }
+        #quandrix .staff-title { color: var(--quandrix-primary); }
+
+        /* Silverquill */
+        #silverquill .section-header h2 { color: var(--silverquill-primary); }
+        #silverquill .section-header { border-bottom-color: var(--silverquill-primary); }
+        #silverquill .staff-card::before { background-color: var(--silverquill-primary); }
+        #silverquill .staff-title { color: var(--silverquill-primary); }
+
+        /* Witherbloom */
+        #witherbloom .section-header h2 { color: var(--witherbloom-primary); }
+        #witherbloom .section-header { border-bottom-color: var(--witherbloom-primary); }
+        #witherbloom .staff-card::before { background-color: var(--witherbloom-primary); }
+        #witherbloom .staff-title { color: var(--witherbloom-primary); }
+
+        .dean-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: #eee;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        footer {
+            background-color: var(--header-bg);
+            color: #888;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .section-header {
+                flex-direction: column;
+            }
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            nav a {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Strixhaven University</h1>
+    <p>Official Faculty & Staff Directory</p>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="#admin">Administration</a></li>
+        <li><a href="#lorehold">Lorehold</a></li>
+        <li><a href="#prismari">Prismari</a></li>
+        <li><a href="#quandrix">Quandrix</a></li>
+        <li><a href="#silverquill">Silverquill</a></li>
+        <li><a href="#witherbloom">Witherbloom</a></li>
+    </ul>
+</nav>
+
+<main>
+
+    <!-- ADMINISTRATION & CAMPUS SERVICES -->
+    <section id="admin">
+        <div class="section-header">
+            <h2>Administration & Campus Services</h2>
+            <span class="college-subtitle">Central Campus</span>
+        </div>
+        <div class="staff-grid">
+            <div class="staff-card">
+                <div class="staff-name">Director Taiva</div>
+                <div class="staff-title">Head of School</div>
+                <div class="staff-bio">Takes an active role in running the university to ensure balance between the colleges. Often found personally greeting new students.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Isabough</div>
+                <div class="staff-title">Head Librarian</div>
+                <div class="staff-bio">A Treant who manages the Biblioplex. She oversees student workers and strictly controls entry to the restricted sections of the library.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Zoei</div>
+                <div class="staff-title">Student Life Administrator</div>
+                <div class="staff-bio">A Satyr and Prismari alumna with boundless energy. Manages student housing, dormitories, and organizes campus-wide events like balls and game nights.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Professor Orvlo</div>
+                <div class="staff-title">General Studies</div>
+                <div class="staff-bio">A Vedalken who teaches magical composition. Serves as a volunteer librarian specializing in dispelling enchantments students place on books.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Gyome</div>
+                <div class="staff-title">Head Chef</div>
+                <div class="staff-bio">A Troll master chef. While not a professor, he teaches a General Studies course on magical cooking. His ingredient choices can be... unusual.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Melvi Le Donto</div>
+                <div class="staff-title">Lab Administrator</div>
+                <div class="staff-bio">Leads the student workers responsible for cleaning, organizing, and maintaining research labs across all six campuses.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">"Coach" Shtomp</div>
+                <div class="staff-title">Mage Tower Coach</div>
+                <div class="staff-bio">An Orc alumnus who struggled with academics but dominated Mage Tower. Now manages the Stadium and intramural fields.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Dramitia</div>
+                <div class="staff-title">Arts Society Manager</div>
+                <div class="staff-bio">A Tiefling Silverquill alumna who manages the Performing Arts Society and directs the annual school play.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">"Cleaner"</div>
+                <div class="staff-title">Grounds Automaton</div>
+                <div class="staff-bio">Created by Professor Losheel. An automaton that obsessively cleans and repairs the campus grounds and supervises student workers.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Yedora</div>
+                <div class="staff-title">Head Groundskeeper</div>
+                <div class="staff-bio">A Treant who maintains the campus flora and oversees student groundskeeping jobs.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOREHOLD -->
+    <section id="lorehold">
+        <div class="section-header">
+            <h2>Lorehold College</h2>
+            <span class="college-subtitle">The College of Archaeomancy</span>
+        </div>
+        <div class="staff-grid">
+            <div class="staff-card">
+                <span class="dean-badge">Dean of Chaos</span>
+                <div class="staff-name">Plargg</div>
+                <div class="staff-title">Dean</div>
+                <div class="staff-bio">An Orc shaman who believes history is a messy, violent narrative best understood through risk and action.</div>
+            </div>
+            <div class="staff-card">
+                <span class="dean-badge">Dean of Order</span>
+                <div class="staff-name">Augusta Tullus</div>
+                <div class="staff-title">Dean</div>
+                <div class="staff-bio">A master Pastraiser who views history as a tapestry of truth to be unraveled through study and logic.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Lianna Flametongue</div>
+                <div class="staff-title">History / Warsinging</div>
+                <div class="staff-bio">A High Elf and Dragonsguard veteran. Stiff and formal, but protective of reckless students. Expert on the Founder Dragons.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Marrick Deepfinder</div>
+                <div class="staff-title">Archaeology</div>
+                <div class="staff-bio">A dashing Halfling known for his luck in ruin-diving. Believes dangerous artifacts belong in private collections (for a price).</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Riri Brighteye</div>
+                <div class="staff-title">Record Keeping</div>
+                <div class="staff-bio">An Owlin Chaos Scholar rarely seen without coffee. Obsessed with finding tiny details in ancient texts others miss.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Tervis Sharpwing</div>
+                <div class="staff-title">Combat / Spirits</div>
+                <div class="staff-bio">A battle medium who wields twin spirit swords. Not magically gifted, but an expert in martial prowess and fighting alongside spirits.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Xyla Langning</div>
+                <div class="staff-title">Linguistics</div>
+                <div class="staff-bio">A Gnome Dustspeaker who mastered nearly twice as many languages as any other faculty member to ensure her name is pronounced correctly.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Osgir, The Reconstructor</div>
+                <div class="staff-title">Artifacts / Smithing</div>
+                <div class="staff-bio">Based in an outdoor workshop due to his size. Teaches students to identify, repair, and replicate ancient artifacts and weaponry.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRISMARI -->
+    <section id="prismari">
+        <div class="section-header">
+            <h2>Prismari College</h2>
+            <span class="college-subtitle">The College of Elemental Arts</span>
+        </div>
+        <div class="staff-grid">
+            <div class="staff-card">
+                <span class="dean-badge">Dean of Perfection</span>
+                <div class="staff-name">Uvilda Mistcoiler</div>
+                <div class="staff-title">Dean</div>
+                <div class="staff-bio">A Djinni master of artistic technique who believes art is the result of deliberate, perfect practice.</div>
+            </div>
+            <div class="staff-card">
+                <span class="dean-badge">Dean of Expression</span>
+                <div class="staff-name">Nassari</div>
+                <div class="staff-title">Dean</div>
+                <div class="staff-bio">An Efreeti who views art as the raw, emotional expression of the elements.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Ahkwa</div>
+                <div class="staff-title">Waterbinding / Sculpting</div>
+                <div class="staff-bio">An elderly Tortle master ice sculptor. Teaches students to find the fine line of control required to create never-melting ice.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Ignaria "Iggy" Kahafi</div>
+                <div class="staff-title">Pyromancy / Dance</div>
+                <div class="staff-bio">A Summer Eladrin with a volatile temper. Brutally honest and demanding, she literally lights a fire under students to drive them to success.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Rock ("Earsplitter")</div>
+                <div class="staff-title">Music / Tempest Art</div>
+                <div class="staff-bio">An Earth Genasi musician. Quiet off-stage, but legendary for his powerful, thunderous concerts.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Zeph</div>
+                <div class="staff-title">Air Magic / Movement</div>
+                <div class="staff-bio">An Air Genasi martial artist. Wears loose clothing to catch air currents and is often seen jumping off buildings to ride the gusts.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Veyran</div>
+                <div class="staff-title">Elemental Summoning</div>
+                <div class="staff-bio">The "Voice of Duality." Focuses on joy and happiness, often teaching students to summon multiple adorable elemental mascots.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Arkin Minexes</div>
+                <div class="staff-title">Mascots / Combat</div>
+                <div class="staff-bio">An Orc and former cheerleader. Teaches cooperation, movement, and summoning mascots to boost school spirit.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUANDRIX -->
+    <section id="quandrix">
+        <div class="section-header">
+            <h2>Quandrix College</h2>
+            <span class="college-subtitle">The College of Numeromancy</span>
+        </div>
+        <div class="staff-grid">
+            <div class="staff-card">
+                <span class="dean-badge">Dean of Substance</span>
+                <div class="staff-name">Kianne</div>
+                <div class="staff-title">Dean</div>
+                <div class="staff-bio">Focuses on physical reality and making magic tangible through mana and fractals.</div>
+            </div>
+            <div class="staff-card">
+                <span class="dean-badge">Dean of Theory</span>
+                <div class="staff-name">Imbraham</div>
+                <div class="staff-title">Dean</div>
+                <div class="staff-bio">An Owlin obsessed with theoretical math and equations that define the nature of space.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Bildra Forheim</div>
+                <div class="staff-title">Arcano-Physics</div>
+                <div class="staff-bio">A Dwarf obsessed with measurement. Teaches how to bend physical laws to create immovable objects or extradimensional spaces.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Clem Greenthumb</div>
+                <div class="staff-title">Scale Magic</div>
+                <div class="staff-bio">A tiny Fairy who developed theorems to stack "Enlarge" spells. Teaches students how to manipulate the size of plants and creatures.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Jazack Quickfoot</div>
+                <div class="staff-title">Teleportation</div>
+                <div class="staff-bio">A Harengon who mastered teleportation solely to run away from danger. Leading expert on dimension doors.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Renald Rothton</div>
+                <div class="staff-title">Abstraction / Gravity</div>
+                <div class="staff-bio">A "Reborn" human who sees equations overlaying reality. Teaches heavy topics regarding gravity and abstraction.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Rixy</div>
+                <div class="staff-title">Illusions / Theory</div>
+                <div class="staff-bio">A Changeling prankster who turns exams into games of hide-and-seek to test the realism of student illusions.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Ruxa</div>
+                <div class="staff-title">Patterns / Augmentation</div>
+                <div class="staff-bio">A patient, ursine professor with a melodic voice. Teaches introductory courses on recognizing mathematical patterns in nature.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SILVERQUILL -->
+    <section id="silverquill">
+        <div class="section-header">
+            <h2>Silverquill College</h2>
+            <span class="college-subtitle">The College of Eloquence</span>
+        </div>
+        <div class="staff-grid">
+            <div class="staff-card">
+                <span class="dean-badge">Dean of Radiance</span>
+                <div class="staff-name">Shaile Talonrook</div>
+                <div class="staff-title">Dean</div>
+                <div class="staff-bio">A master orator who believes in using language to uplift others and shed light on truth.</div>
+            </div>
+            <div class="staff-card">
+                <span class="dean-badge">Dean of Shadow</span>
+                <div class="staff-name">Embrose Lu</div>
+                <div class="staff-title">Dean</div>
+                <div class="staff-bio">A strict poet who believes in the power of cutting remarks and using ink to obscure and dominate.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Helioz Sunmane</div>
+                <div class="staff-title">Luminancy / Leadership</div>
+                <div class="staff-bio">A Leonin master of light magic. Teaches students to shake off Silverquill's cruel reputation and use words to inspire allies.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Liv Brandford</div>
+                <div class="staff-title">Shadow Magic / Dueling</div>
+                <div class="staff-bio">Teaches that the best defense is a good offense. Specializes in silencing opponents and aggressive domination techniques.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Luc Brandford</div>
+                <div class="staff-title">Defense / Protection</div>
+                <div class="staff-bio">Teaches "The Battle of Wits," using whispers to turn enemies against one another or protecting groups with ink barriers.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Sace Solindiel</div>
+                <div class="staff-title">Enchantment / Ethics</div>
+                <div class="staff-bio">A Half-Elf who came to Strixhaven to learn control over her innate charm. Teaches the ethics of enchantment and de-escalation.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">"Smart Mouth"</div>
+                <div class="staff-title">Linguistics</div>
+                <div class="staff-bio">A Kenku with a genius-level intellect. Teaches the importance of syntax, intent, and even the power of gibberish in spellcasting.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Brenneth Blackstone</div>
+                <div class="staff-title">Inkomancy</div>
+                <div class="staff-bio">A Tiefling who delves deep into shadow magic. Teaches students to embrace darker thoughts to harness the void.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WITHERBLOOM -->
+    <section id="witherbloom">
+        <div class="section-header">
+            <h2>Witherbloom College</h2>
+            <span class="college-subtitle">The College of Essence Studies</span>
+        </div>
+        <div class="staff-grid">
+            <div class="staff-card">
+                <span class="dean-badge">Dean of Growth</span>
+                <div class="staff-name">Lisette</div>
+                <div class="staff-title">Dean</div>
+                <div class="staff-bio">A master healer who focuses on nurturing life and the power of nature to restore.</div>
+            </div>
+            <div class="staff-card">
+                <span class="dean-badge">Dean of Decay</span>
+                <div class="staff-name">Valentin</div>
+                <div class="staff-title">Dean</div>
+                <div class="staff-bio">A Vampire who explores the power found in death and the harvesting of life essence.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Serafina Onyx</div>
+                <div class="staff-title">Necromancy</div>
+                <div class="staff-bio">Teaches reanimation using "Barty," a zombie kept in a closet for centuries. Secretive and powerful.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Asana Vargundil</div>
+                <div class="staff-title">Alchemy / Healing</div>
+                <div class="staff-bio">An Elf with a scientific mind. Teaches the creation of antidotes, potions, and the importance of sanitizing healing environments.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Kojil the Tamer</div>
+                <div class="staff-title">Spirits / Fauna</div>
+                <div class="staff-bio">A Firbolg who bonds with animals. Along with his ghost-scurrid familiar, Tall Ear, he teaches students to bond with beasts.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Venoc Plaguescale</div>
+                <div class="staff-title">Blight Magic</div>
+                <div class="staff-bio">A Green Dragonborn Banelock who creates powerful diseases. Dislikes most students and tests them with blight magic.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Verooja</div>
+                <div class="staff-title">Arcano-Mycology</div>
+                <div class="staff-bio">A Loxodon who maintains a large garden and mushroom cave. Teaches students to communicate with plants for profit.</div>
+            </div>
+            <div class="staff-card">
+                <div class="staff-name">Verelda Lang</div>
+                <div class="staff-title">Arcano-Biology</div>
+                <div class="staff-bio">A Dryad expert on magical monsters. Teaches the required courses on the anatomy and weaknesses of dangerous creatures.</div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>Strixhaven University | Staff Directory</p>
+    <p>Created for D&D 5th Edition Campaigns</p>
+</footer>
+
+</body>
+</html>
